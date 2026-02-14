@@ -6,6 +6,7 @@ import { stockRoutes } from './routes/stock.routes.js'
 import { entradaRouter } from './routes/entrada.routes.js'
 import { salidaRoutes } from './routes/salida.routes.js'
 
+dotenv.config()
 const app = express()
 const PORT = process.env.PORT || 3000
 
