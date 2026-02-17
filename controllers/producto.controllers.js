@@ -16,14 +16,14 @@ export const getProductos = async (req, res) => {
 // Crear producto
 export const createProducto = async (req, res) => {
   try {
-    const { codigo, descripcion, precio_compra, precio_venta } = req.body
+    const { codigo, descripcion, categoria, precio_compra } = req.body
 
     const result = await pool.query(
       `INSERT INTO productos
-       (codigo, descripcion, precio_compra, precio_venta)
+       (codigo, descripcion, categoria, precio_compra)
        VALUES ($1,$2,$3,$4)
        RETURNING *`,
-      [codigo, descripcion, precio_compra, precio_venta]
+      [codigo, descripcion, categoria || 'General', precio_compra]
     )
 
     res.status(201).json(result.rows[0])
@@ -38,19 +38,18 @@ export const updateProducto = async (req, res) => {
   try {
     const { id } = req.params
 
-    const { codigo, descripcion, precio_compra, precio_venta, estado } =
-      req.body
+    const { codigo, descripcion, categoria, precio_compra, estado } = req.body
 
     const result = await pool.query(
       `UPDATE productos
        SET codigo=$1,
            descripcion=$2,
-           precio_compra=$3,
-           precio_venta=$4,
+           categoria=$3,
+           precio_compra=$4,
            estado=$5
        WHERE id_producto=$6
        RETURNING *`,
-      [codigo, descripcion, precio_compra, precio_venta, estado, id]
+      [codigo, descripcion, categoria || 'General', precio_compra, estado, id]
     )
 
     if (result.rows.length === 0) {

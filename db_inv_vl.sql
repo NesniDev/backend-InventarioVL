@@ -13,12 +13,15 @@ CREATE TABLE productos (
     id_producto SERIAL PRIMARY KEY,
     codigo VARCHAR(20) UNIQUE NOT NULL,
     descripcion VARCHAR(200) NOT NULL,
+    categoria VARCHAR(50) DEFAULT 'General',
     precio_compra NUMERIC(10,2) NOT NULL,
     precio_venta NUMERIC(10,2) NOT NULL,
     fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     estado VARCHAR(20) DEFAULT 'activo'
 );
 
+-- Si la tabla ya existe, ejecutar:
+-- ALTER TABLE productos ADD COLUMN IF NOT EXISTS categoria VARCHAR(50) DEFAULT 'General';
 
 -- =========================================
 -- TABLA ENTRADAS (COMPRAS)
