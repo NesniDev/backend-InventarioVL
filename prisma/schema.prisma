@@ -8,15 +8,14 @@ datasource db {
 }
 
 model Producto {
-  id_producto    Int      @id @default(autoincrement())
-  codigo         String   @unique @db.VarChar(20)
-  descripcion    String   @db.VarChar(200)
-  categoria      String?  @default("General") @db.VarChar(50)
-  precio_compra  Decimal  @db.Decimal(10, 2)
-  precio_venta   Decimal? @default(0) @db.Decimal(10, 2)
-  fecha_creacion DateTime @default(now()) @db.Timestamp()
-  estado         String?  @default("activo") @db.VarChar(20)
-
+  id_producto     Int              @id @default(autoincrement())
+  codigo          String           @unique @db.VarChar(20)
+  descripcion     String           @db.VarChar(200)
+  categoria       String?          @default("General") @db.VarChar(50)
+  precio_compra   Decimal          @db.Decimal(10, 2)
+  precio_venta    Decimal?         @default(0) @db.Decimal(10, 2)
+  fecha_creacion  DateTime         @default(now()) @db.Timestamp(6)
+  estado          String?          @default("activo") @db.VarChar(20)
   detalle_entrada DetalleEntrada[]
   detalle_salida  DetalleSalida[]
 
@@ -24,49 +23,45 @@ model Producto {
 }
 
 model Entrada {
-  id_entrada Int      @id @default(autoincrement())
-  fecha      DateTime @default(now()) @db.Timestamp()
-  proveedor  String?  @db.VarChar(150)
-  total      Decimal? @default(0) @db.Decimal(12, 2)
-
-  detalles DetalleEntrada[]
+  id_entrada Int              @id @default(autoincrement())
+  fecha      DateTime         @default(now()) @db.Timestamp(6)
+  proveedor  String?          @db.VarChar(150)
+  total      Decimal?         @default(0) @db.Decimal(12, 2)
+  detalles   DetalleEntrada[]
 
   @@map("entradas")
 }
 
 model DetalleEntrada {
-  id_detalle      Int     @id @default(autoincrement())
+  id_detalle      Int       @id @default(autoincrement())
   id_entrada      Int?
   id_producto     Int?
   cantidad        Int
-  precio_unitario Decimal @db.Decimal(10, 2)
-
-  entrada  Entrada?  @relation(fields: [id_entrada], references: [id_entrada], onDelete: Cascade)
-  producto Producto? @relation(fields: [id_producto], references: [id_producto])
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  entrada         Entrada?  @relation(fields: [id_entrada], references: [id_entrada], onDelete: Cascade)
+  producto        Producto? @relation(fields: [id_producto], references: [id_producto])
 
   @@map("detalle_entrada")
 }
 
 model Salida {
-  id_salida Int      @id @default(autoincrement())
-  fecha     DateTime @default(now()) @db.Timestamp()
-  cliente   String?  @db.VarChar(150)
-  total     Decimal? @default(0) @db.Decimal(12, 2)
-
-  detalles DetalleSalida[]
+  id_salida Int             @id @default(autoincrement())
+  fecha     DateTime        @default(now()) @db.Timestamp(6)
+  cliente   String?         @db.VarChar(150)
+  total     Decimal?        @default(0) @db.Decimal(12, 2)
+  detalles  DetalleSalida[]
 
   @@map("salidas")
 }
 
 model DetalleSalida {
-  id_detalle      Int     @id @default(autoincrement())
+  id_detalle      Int       @id @default(autoincrement())
   id_salida       Int?
   id_producto     Int?
   cantidad        Int
-  precio_unitario Decimal @db.Decimal(10, 2)
-
-  salida   Salida?   @relation(fields: [id_salida], references: [id_salida], onDelete: Cascade)
-  producto Producto? @relation(fields: [id_producto], references: [id_producto])
+  precio_unitario Decimal   @db.Decimal(10, 2)
+  producto        Producto? @relation(fields: [id_producto], references: [id_producto])
+  salida          Salida?   @relation(fields: [id_salida], references: [id_salida], onDelete: Cascade)
 
   @@map("detalle_salida")
 }
