@@ -1,36 +1,30 @@
-import prisma from '../config/db.js'
+import pool from '../config/db.js'
 
 export const getStock = async (req, res) => {
   try {
-    const productos = await prisma.producto.findMany({
-      orderBy: { id_producto: 'desc' },
-      include: {
-        detalle_entrada: { select: { cantidad: true } },
-        detalle_salida: { select: { cantidad: true } }
-      }
-    })
+    const { rows } = await pool.query(`
+      SELECT
+        p.id_producto,
+        p.codigo,
+        p.descripcion,
+        p.categoria,
+        p.precio_compra,
+        (COALESCE(e.total, 0) - COALESCE(s.total, 0))::int AS stock_actual
+      FROM productos p
+      LEFT JOIN (
+        SELECT id_producto, SUM(cantidad) AS total
+        FROM detalle_entrada
+        GROUP BY id_producto
+      ) e ON p.id_producto = e.id_producto
+      LEFT JOIN (
+        SELECT id_producto, SUM(cantidad) AS total
+        FROM detalle_salida
+        GROUP BY id_producto
+      ) s ON p.id_producto = s.id_producto
+      ORDER BY p.id_producto DESC
+    `)
 
-    const stock = productos.map((p) => {
-      const totalEntradas = p.detalle_entrada.reduce(
-        (sum, d) => sum + d.cantidad,
-        0
-      )
-      const totalSalidas = p.detalle_salida.reduce(
-        (sum, d) => sum + d.cantidad,
-        0
-      )
-
-      return {
-        id_producto: p.id_producto,
-        codigo: p.codigo,
-        descripcion: p.descripcion,
-        categoria: p.categoria,
-        precio_compra: p.precio_compra,
-        stock_actual: totalEntradas - totalSalidas
-      }
-    })
-
-    res.json(stock)
+    res.json(rows)
   } catch (error) {
     console.error(error)
     res.status(500).json({ error: 'Error al obtener stock' })
