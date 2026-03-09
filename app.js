@@ -43,6 +43,11 @@ app.use(
 )
 app.use(express.json())
 
+// Ruta de prueba
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' })
+})
+
 app.use('/api/productos', router)
 app.use('/api/stock', stockRoutes)
 app.use('/api/entradas', entradaRouter)
@@ -50,6 +55,9 @@ app.use('/api/salidas', salidaRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
+  console.log(
+    'Routes: /api/health, /api/productos, /api/stock, /api/entradas, /api/salidas'
+  )
 })
 
 export default app
